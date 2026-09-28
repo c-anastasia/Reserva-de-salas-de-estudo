@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Registar - Grupo de Estudo ECL</title>
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<nav class="navbar navbar-light bg-light">
+    <a class="navbar-brand" href="{{ url_for('login') }}">Grupo de Estudo ECL</a>
+</nav>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+
+                    <h2 class="text-center mb-4">
+                        Registar
+                    </h2>
+
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-info">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <form method="POST">
+                        <div class="form-group">
+
+                            <label>Nome</label>
+
+                            <input type="text"
+                                   name="nome"
+                                   class="form-control"
+                                   required>
+                        </div>
+
+                        <div class="form-group">
+
+                            <label>Email</label>
+
+                            <input type="email"
+                                   name="email"
+                                   class="form-control"
+                                   required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="passe">Palavra-passe:</label>
+                            <input type="password"
+                                id="passe"
+                                name="passe"
+                                class="form-control"
+                                pattern="(?=.*\d)(?=.*[\W_]).{5,}"
+                                title="A palavra-passe deve ter pelo menos 5 caracteres, incluindo 1 número e 1 símbolo (ex: @, #, ., %)."
+                                required>
+
+                            <small class="form-text text-muted">
+                                Mínimo de 5 caracteres, contendo pelo menos 1 número e 1 símbolo.
+                            </small>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block">Registar</button>
+
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('login') }}">Já tenho conta</a>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

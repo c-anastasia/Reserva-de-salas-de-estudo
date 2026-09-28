@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <title>Grupo de Estudo ECL</title>
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand"
+       href="{{ url_for('index') }}">Grupo de Estudo ECL</a>
+
+    <div class="ml-auto">
+        <div class="dropdown">
+            <button class="btn btn-outline-secondary dropdown-toggle"
+                    type="button"
+                    data-toggle="dropdown">
+                Ligações
+            </button>
+
+            <div class="dropdown-menu dropdown-menu-right">
+                <a class="dropdown-item"
+                   href="{{ url_for('logout') }}">
+                    Logout
+                </a>
+
+                <a class="dropdown-item"
+                   href="https://www.google.com/maps/search/Escola+de+Comércio+de+Lisboa"
+                   target="_blank">
+                    Localização
+                </a>
+
+                <a class="dropdown-item"
+                   href="https://escolacomerciolisboa.pt/"
+                   target="_blank">
+                    Site da Escola
+                </a>
+
+                <a class="dropdown-item"
+                   href="https://eclisboa.eschoolingserver.com/"
+                   target="_blank">
+                    eSchooling
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+{% block content %}
+<div class="container mt-4">
+    {% with mensagens = get_flashed_messages() %}
+        {% if mensagens %}
+            {% for mensagem in mensagens %}
+
+                <div class="alert alert-info">
+                    {{ mensagem }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h3>Bem-vindo, {{ utilizador.nome }}!</h3>
+            <p>Consulte e atualize os seus dados.</p>
+
+            <a href="{{ url_for('editar_utilizador',id=utilizador.id) }}"
+               class="btn btn-primary">Editar dados</a>
+        </div>
+    </div>
+
+    <div class="text-center mb-4">
+        <h2>Consultar disponibilidade</h2>
+        <p>Escolha uma data e uma hora para consultar os lugares disponíveis.</p>
+
+        <form method="GET"
+              action="{{ url_for('index') }}"
+              class="form-row justify-content-center">
+
+            <div class="form-group col-md-4">
+                <label>Data</label>
+
+                <input type="date"
+                       name="data"
+                       class="form-control"
+                       value="{{ data }}"
+                       required>
+            </div>
+
+
+            <div class="form-group col-md-4">
+                <label>Hora</label>
+
+                <select name="hora"
+                        class="form-control"
+                        required>
+
+                    <option value="">Escolha uma hora</option>
+
+                    {% for horario in horarios %}
+                        <option value="{{ horario }}"
+                            {% if hora == horario %}
+                                selected
+                            {% endif %}>
+
+                            {% if horario == "08:00" %}
+                                08:00 - 09:00
+                            {% elif horario == "09:00" %}
+                                09:00 - 10:00
+                            {% elif horario == "11:00" %}
+                                11:00 - 12:00
+                            {% elif horario == "16:00" %}
+                                16:00 - 17:00
+                            {% elif horario == "17:00" %}
+                                17:00 - 18:00
+                            {% endif %}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+
+            <div class="form-group col-md-2 d-flex align-items-end">
+
+                <button type="submit"
+                        class="btn btn-primary btn-block">Consultar</button>
+            </div>
+        </form>
+    </div>
+
+
+    {% if data and hora %}
+        <div class="text-center mb-4">
+            <h3>Salas disponíveis</h3>
+
+            <p>
+                {% if hora == "08:00" %}
+                    08:00 - 09:00
+
+                {% elif hora == "09:00" %}
+                    09:00 - 10:00
+
+                {% elif hora == "11:00" %}
+                    11:00 - 12:00
+
+                {% elif hora == "16:00" %}
+                    16:00 - 17:00
+
+                {% elif hora == "17:00" %}
+                    17:00 - 18:00
+
+                {% else %}
+
+                    {{ hora }}
+
+                {% endif %}
+            </p>
+        </div>
+
+
+        <div class="row">
+            {% for sala in salas %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <h4>Sala {{ sala.numero }}</h4>
+
+                            <p>Capacidade: {{ sala.capacidade }} pessoas</p>
+
+                            {% if sala.disponiveis == 0 %}
+                                <p class="text-danger">
+                                    <b> Ocupada ({{ sala.ocupadas }}/{{ sala.capacidade }}) </b></p>
+
+                                <button class="btn btn-secondary"
+                                        disabled>Ocupada</button>
+
+                            {% else %}
+
+                                <p class="text-success">
+                                    <b> {{ sala.estado }} </b>
+                                </p>
+
+                                <a href="{{ url_for(
+                                    'reserva',
+                                    sala=sala.numero,
+                                    data=data,
+                                    hora=hora
+                                ) }}"
+                                   class="btn btn-primary">
+                                    Reservar
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

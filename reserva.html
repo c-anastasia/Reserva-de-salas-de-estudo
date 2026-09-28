@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport"content="width=device-width, initial-scale=1">
+
+    <title>Reservar Sala {{ sala }}</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<nav class="navbar navbar-light bg-light">
+    <a class="navbar-brand" href="{{ url_for('index', data=data, hora=hora) }}">Grupo de Estudo ECL</a>
+    <a class="btn btn-outline-secondary" href="{{ url_for('index', data=data, hora=hora) }}">Voltar</a>
+</nav>
+
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-body">
+            <div class="text-center mb-4">
+
+                <img src="{{ url_for('static',filename='planta_ecl.png') }}"
+                     class="img-fluid"
+                     alt="Planta das salas"
+                     style="max-width: 300px;">
+            </div>
+
+            <h2 class="text-center mb-4">
+                Reservar Sala {{ sala }}
+            </h2>
+
+            <div class="text-center mb-4">
+                Capacidade:<b> {{ capacidade }} pessoas</b>
+                <p>Lugares disponíveis: <b>{{ disponiveis }}</b></p>
+
+                {% if data and hora %}
+                    
+                    <p class="text-muted">
+                        Duração da reserva:
+                        <b>1 hora</b>
+                    </p>
+
+                {% endif %}
+
+            </div>
+
+            {% with mensagens = get_flashed_messages() %}
+                {% if mensagens %}
+                    {% for mensagem in mensagens %}
+
+                        <div class="alert alert-danger">{{ mensagem }}</div>
+
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            {% if disponiveis > 0 %}
+                <form method="POST">
+                    <div class="form-group">
+                        <label>Nome</label>
+
+                        <input type="text"
+                               name="nome"
+                               class="form-control"
+                               value="{{ session['user_name'] }}"
+                               required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Data</label>
+
+                        <input type="date"
+                               name="data"
+                               class="form-control"
+                               value="{{ data }}"
+                               required>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="form-group">
+
+                        <label>Hora da reserva</label>
+
+                        <input type="text"
+                            class="form-control"
+                            value="{% if hora == '08:00' %}08:00 - 09:00{% elif hora == '09:00' %}09:00 - 10:00{% elif hora == '11:00' %}11:00 - 12:00{% elif hora == '16:00' %}16:00 - 17:00{% elif hora == '17:00' %}17:00 - 18:00{% endif %}"
+                            readonly>
+
+                        <input type="hidden"
+                            name="hora"
+                            value="{{ hora }}">
+
+                    </div>
+
+                    <div class="form-group">
+                        <label>N.º de pessoas</label>
+
+                        <input type="number"
+                               name="pessoas"
+                               class="form-control"
+                               min="1"
+                               max="{{ disponiveis }}"
+                               required>
+
+
+                        <small class="form-text text-muted"> Pode reservar até {{ disponiveis }} lugar(es).<small>
+                    </div>
+
+                    <button type="submit"class="btn btn-primary btn-block">Confirmar reserva</button>
+                </form>
+
+            {% else %}
+
+                <div class="alert alert-danger text-center">Esta sala já está ocupada para esta data e hora.</div>
+
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
